@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amssymb,graphicx, listings, array}
+
+\begin{document}
+
+\begin{center}
+{\Large CS221 Fall 2018 - 2019 Homework 3}
+
+\begin{tabular}{rl}     
+Name: & Dat Nguyen \\
+Date: & 2/12/2019
+\end{tabular}
+\end{center}
+ 
+ By turning in this assignment, I agree by the Stanford honor code and declare
+that all of this is my own work.
+
+\section*{Problem 1: word segmentation}
+\begin{enumerate}[label=(\alph*)]
+    \item
+    Query string: "Therearecountlessanimalsonearth". \\
+    Correct segmentation: "There are countless animals on earth". \\
+    Wrong segmentation: "There are count less animals on earth". \\
+    Where 1-gram and c("count") = 0.1, c("less") = 0.2 and c("countless") = 0.2 
+\end{enumerate}
+
+\section*{Problem 2: vowel insertion}
+\begin{enumerate}[label=(\alph*)]
+    \item
+    Query string: "th bs r n \ btfl flwr" \\
+    Correct vowel insertion: "the bees are on a beautiful flower". \\
+    Wrong vowel insertion: "the books are on a beautiful flower". \\
+    Where bigramCost('the', 'bees') = 0.2, bigramCost('bees', 'are') = 0.1, 
+    bigramCost('the', 'books') = 0.1, and bigramCost('books', 'are') = 0.3.
+\end{enumerate}
+
+\section*{Problem 3: putting it together}
+\begin{enumerate}[label=(\alph*)]
+    \item \addtocounter{enumi}{1}
+    \begin{itemize}
+    \item States: list of actions made in each step, where each action includes 2 kinds of information: next index to insert space after that in the query string and the choosen word based on the substring between most recent 2 spaces of the query string. \\
+    \item Actions: as explained above.\\
+    \item Cost: the bigram cost of the previous choosen word and the currently choosen word. \\
+    \item Initial state: empty list. \\
+    \item End state: if the next index to insert space after that is the last index of the query string.
+	\end{itemize}
+
+    \item
+    We define $u_b(w) = \underset{w' \in Vocabulary}{min}b(w', w)$, and the following relaxed problem. \\
+    \begin{itemize}
+    \item States: like the original problem. \\
+    \item Actions: like the original problem. \\
+    \item Cost: let sb be substring between most recent 2 spaces of the query string resulting from state s and action a. We define the cost to be $Cost_{rel}(s, a) = \underset{st \in possibleFills(sb)}{\text{min}}u_b(st)$. \\
+    \item Start state: like original problem. \\
+    \item End state: like original problem.
+    \end{itemize}
+    Next we will prove that $Cost_{rel}(s, a) \leq Cost(s, a)$. Let sb be substring between most recent 2 spaces of the query string and st' be the choosen word from possibleFills(sb) resulting from state s and action a. We have
+    \begin{align*}
+    	Cost_{rel}(s, a) &= \underset{st \in possibleFills(sb)}{\text{min}}u_b(st) \\
+    	&\leq u_b(st') \\
+    	&= \underset{w' \in Vocabulary}{min}b(w', st') \\
+    	&\leq b(\text{prevWord}, st') \\
+    	&= Cost(s, a) 
+    \end{align*}
+    Therefore if we let $h(s) = FutureCost_{rel}(s)$ then $h(s)$ is consistent. Since the cost for the relaxed problem are all equal for choosen words given substring between most recent 2 spaces of the query string, we can cosider the following problem to save computation. 
+    \begin{itemize}
+    \item States: list of next index to insert space after that in the query string \\
+    \item Actions: next index to insert space after that in the query string \\
+    \item Cost: let sb be substring between most recent 2 spaces of the query string resulting from state s and action a. We define the cost to be $Cost_{rel}(s, a) = \underset{st \in possibleFills(sb)}{\text{min}}u_b(st)$. \\
+    \item Start state: empty list. \\
+    \item End state: if the next index to insert space after that is the last index of the query string.
+    \end{itemize}
+    And when doing in the original problem we let $FutureCost(s, a)$ be the future cost in the relaxed problem starting from the current substring in the query string being considered by the original problem.
+
+    \item
+    UCS is a special case of $A^*$ if we let $h(s) = 0$. \\
+    BFS is a special case of UCS if we let every edge have cost = 1.
+\end{enumerate}
+\end{document}
