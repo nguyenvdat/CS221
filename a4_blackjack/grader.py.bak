@@ -83,7 +83,7 @@ def test3a():
     for gold, mdp, state, action in tests:
         if not grader.requireIsEqual(gold,
                                      mdp.succAndProbReward(state, action)):
-            print('   state: {}, action: {}'.format(state, action))
+            print '   state: {}, action: {}'.format(state, action)
 grader.addBasicPart('3a-basic', test3a, 5, description="Basic test for succAndProbReward() that covers several edge cases.")
 
 def test3aHidden():
@@ -101,12 +101,11 @@ def test3b():
     vi.solve(mdp)
     grader.requireIsEqual(mdp.threshold, 20)
     grader.requireIsEqual(mdp.peekCost, 1)
-    f = len([a for a in list(vi.pi.values()) if a == 'Peek']) / float(len(list(vi.pi.values())))
+    f = len([a for a in vi.pi.values() if a == 'Peek']) / float(len(vi.pi.values()))
     grader.requireIsGreaterThan(.1, f)
     # Feel free to uncomment these lines if you'd like to print out states/actions
     # for k, v in vi.pi.iteritems():
-    #     print(k, v)
-    print(f)
+    #     print k, v
 grader.addBasicPart('3b-basic', test3b, 4, description="Test for peekingMDP().  Ensure that in at least 10% of states, the optimal policy is to peek.")
 
 ############################################################

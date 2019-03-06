@@ -1,6 +1,8 @@
 import util, math, random
 from collections import defaultdict
 from util import ValueIteration
+import numpy as np
+import copy
 
 ############################################################
 # Problem 2a
@@ -11,13 +13,16 @@ class CounterexampleMDP(util.MDP):
     # Return a value of any type capturing the start state of the MDP.
     def startState(self):
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return 0
         # END_YOUR_CODE
 
     # Return a list of strings representing actions possible from |state|.
     def actions(self, state):
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        if state == 0:
+            return ['Down', 'Up']
+        else:
+            return []
         # END_YOUR_CODE
 
     # Given a |state| and |action|, return a list of (newState, prob, reward) tuples
@@ -25,13 +30,18 @@ class CounterexampleMDP(util.MDP):
     # Remember that if |state| is an end state, you should return an empty list [].
     def succAndProbReward(self, state, action):
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        if state == -1 or state == 1:
+            return []
+        if action == 'Down':
+            return [(-1, 0.9, 20), (1, 0.1, 100)] 
+        else:
+            return [(-1, 0.8, 20), (1, 0.2, 100)] 
         # END_YOUR_CODE
 
     # Set the discount factor (float or integer) for your counterexample MDP.
     def discount(self):
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return 1
         # END_YOUR_CODE
 
 ############################################################
@@ -79,7 +89,42 @@ class BlackjackMDP(util.MDP):
     #   don't include that state in the list returned by succAndProbReward.
     def succAndProbReward(self, state, action):
         # BEGIN_YOUR_CODE (our solution is 53 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        if state[2] is None:
+            return []
+        deck = list(state[2])
+        transitions = []
+        def take_action(take_index, take_prob):
+            new_deck = copy.deepcopy(deck)
+            new_deck[take_index] -= 1
+            new_value = state[0] + self.cardValues[take_index]
+            reward = 0
+            if sum(new_deck) > 0 and new_value <= self.threshold:
+                new_state = (new_value, None, tuple(new_deck))
+            elif new_value > self.threshold: # go bust
+                new_state = (new_value, None, None)
+            else: # run out of card
+                new_state = (new_value, None, None)
+                reward = new_value
+            transitions.append((new_state, take_prob, reward))
+        if action == 'Take':
+            if state[1] is not None: # last action was a peek
+                take_action(state[1], 1)
+            else:
+                for i, card_left in enumerate(deck):
+                    if card_left != 0:
+                        take_prob = card_left / sum(deck)
+                        take_action(i, take_prob)
+        elif action == 'Peek':
+            if state[1] is not None:
+                return []
+            for i, card_left in enumerate(deck):
+                if card_left != 0:
+                    peek_prob = card_left / sum(deck)
+                    new_state = (state[0], i, state[2])
+                    transitions.append((new_state, peek_prob, -self.peekCost))
+        else:
+            transitions.append(((state[0], None, None), 1, state[0]))
+        return transitions
         # END_YOUR_CODE
 
     def discount(self):
@@ -94,7 +139,7 @@ def peekingMDP():
     optimal action at least 10% of the time.
     """
     # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    return BlackjackMDP([3, 22], 1, 20, 1)
     # END_YOUR_CODE
 
 ############################################################
@@ -114,6 +159,10 @@ class QLearningAlgorithm(util.RLAlgorithm):
         self.explorationProb = explorationProb
         self.weights = defaultdict(float)
         self.numIters = 0
+        self.replay_buffer = []
+        self.exp_begin = 0.5
+        self.exp_end = 0
+        self.is_test = False
 
     # Return the Q function associated with the weights and features
     def getQ(self, state, action):
@@ -127,7 +176,7 @@ class QLearningAlgorithm(util.RLAlgorithm):
     # |explorationProb|, take a random action.
     def getAction(self, state):
         self.numIters += 1
-        if random.random() < self.explorationProb:
+        if random.random() < self.getExplorationProb():
             return random.choice(self.actions(state))
         else:
             return max((self.getQ(state, action), action) for action in self.actions(state))[1]
@@ -136,13 +185,27 @@ class QLearningAlgorithm(util.RLAlgorithm):
     def getStepSize(self):
         return 1.0 / math.sqrt(self.numIters)
 
+    def getExplorationProb(self):
+        if self.is_test: return 0
+        scale = min(1, self.numIters / 600000)
+        return self.exp_begin + scale * (self.exp_end - self.exp_begin)
+
     # We will call this function with (s, a, r, s'), which you should use to update |weights|.
     # Note that if s is a terminal state, then s' will be None.  Remember to check for this.
     # You should update the weights using self.getStepSize(); use
     # self.getQ() to compute the current estimate of the parameters.
     def incorporateFeedback(self, state, action, reward, newState):
         # BEGIN_YOUR_CODE (our solution is 12 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        self.replay_buffer.append((state, action, reward, newState))
+        if len(self.replay_buffer) > 1000:
+            s_state, s_action, s_reward, s_new_state = random.choice(self.replay_buffer)
+            prediction = self.getQ(s_state, s_action) 
+            if s_new_state is not None:
+                target = s_reward + self.discount * max(self.getQ(s_new_state, new_action) for new_action in self.actions(s_new_state))
+            else:
+                target = s_reward
+            for f, v in self.featureExtractor(s_state, s_action):
+                self.weights[f] = self.weights[f] - self.getStepSize() * (prediction - target) * v
         # END_YOUR_CODE
 
 # Return a single-element list containing a binary (indicator) feature
@@ -166,7 +229,20 @@ def simulate_QL_over_MDP(mdp, featureExtractor):
     # that you add a few lines of code here to run value iteration, simulate Q-learning on the MDP,
     # and then print some stats comparing the policies learned by these two approaches.
     # BEGIN_YOUR_CODE
-    pass
+    ql = QLearningAlgorithm(actions=lambda state: ['Take', 'Peek', 'Quit'], discount=1, featureExtractor=featureExtractor)
+    util.simulate(mdp, ql, numTrials=150000, maxIterations=1000)
+    print(ql.numIters)
+    print(ql.getExplorationProb())
+    ql.is_test = True
+    vi = ValueIteration()
+    vi.solve(mdp)
+    match = [ql.getAction(state) == action for state, action in vi.pi.items()]
+    ql_action = [ql.getAction(state) for state, action in vi.pi.items()]
+    # ql_action = [action for state, action in vi.pi.items()]
+    percentage_match = sum(match) / len(match)
+    print(ql_action)
+    # print(ql.weights)
+    return percentage_match 
     # END_YOUR_CODE
 
 
@@ -186,7 +262,14 @@ def blackjackFeatureExtractor(state, action):
     total, nextCard, counts = state
 
     # BEGIN_YOUR_CODE (our solution is 8 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    # features = [((state, action), 1)]
+    features = []
+    features.append(((action, total), 1))
+    if counts is not None:
+        features.append(((action, tuple(int(i > 0) for i in counts)), 1))
+        for j in counts:
+            features.append(((action, counts[j], j), 1))
+    return features
     # END_YOUR_CODE
 
 ############################################################
