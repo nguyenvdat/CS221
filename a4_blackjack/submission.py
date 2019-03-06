@@ -160,15 +160,23 @@ class QLearningAlgorithm(util.RLAlgorithm):
         self.weights = defaultdict(float)
         self.numIters = 0
         self.replay_buffer = []
-        self.exp_begin = 0.5
+        self.exp_begin = 0.6
         self.exp_end = 0
+        self.eps_begin = 0.1
+        self.eps_end = 0.001
         self.is_test = False
+        self.target_weights = defaultdict(float)
 
     # Return the Q function associated with the weights and features
-    def getQ(self, state, action):
+    def getQ(self, state, action, is_target_network=False):
         score = 0
-        for f, v in self.featureExtractor(state, action):
-            score += self.weights[f] * v
+        if is_target_network:
+            for f, v in self.featureExtractor(state, action):
+                score += self.target_weights[f] * v
+        else:
+            for f, v in self.featureExtractor(state, action):
+                score += self.weights[f] * v
+
         return score
 
     # This algorithm will produce an action given a state.
@@ -184,10 +192,12 @@ class QLearningAlgorithm(util.RLAlgorithm):
     # Call this function to get the step size to update the weights.
     def getStepSize(self):
         return 1.0 / math.sqrt(self.numIters)
+        # scale = min(1, self.numIters / 200000)
+        # return self.eps_begin + scale * (self.eps_end - self.eps_begin)
 
     def getExplorationProb(self):
         if self.is_test: return 0
-        scale = min(1, self.numIters / 600000)
+        scale = min(1, self.numIters / 500000)
         return self.exp_begin + scale * (self.exp_end - self.exp_begin)
 
     # We will call this function with (s, a, r, s'), which you should use to update |weights|.
@@ -197,11 +207,14 @@ class QLearningAlgorithm(util.RLAlgorithm):
     def incorporateFeedback(self, state, action, reward, newState):
         # BEGIN_YOUR_CODE (our solution is 12 lines of code, but don't worry if you deviate from this)
         self.replay_buffer.append((state, action, reward, newState))
-        if len(self.replay_buffer) > 1000:
+        if len(self.replay_buffer) > 100:
+            if self.numIters % 50 == 0:
+                self.target_weights = copy.deepcopy(self.weights)
             s_state, s_action, s_reward, s_new_state = random.choice(self.replay_buffer)
-            prediction = self.getQ(s_state, s_action) 
+            prediction = self.getQ(s_state, s_action)
             if s_new_state is not None:
-                target = s_reward + self.discount * max(self.getQ(s_new_state, new_action) for new_action in self.actions(s_new_state))
+                max_action = max((self.getQ(s_new_state, new_action), new_action) for new_action in self.actions(s_new_state))[1]
+                target = s_reward + self.discount * self.getQ(s_new_state, max_action, is_target_network=True)
             else:
                 target = s_reward
             for f, v in self.featureExtractor(s_state, s_action):
@@ -230,17 +243,22 @@ def simulate_QL_over_MDP(mdp, featureExtractor):
     # and then print some stats comparing the policies learned by these two approaches.
     # BEGIN_YOUR_CODE
     ql = QLearningAlgorithm(actions=lambda state: ['Take', 'Peek', 'Quit'], discount=1, featureExtractor=featureExtractor)
-    util.simulate(mdp, ql, numTrials=150000, maxIterations=1000)
+    util.simulate(mdp, ql, numTrials=200000, maxIterations=1000)
     print(ql.numIters)
     print(ql.getExplorationProb())
     ql.is_test = True
     vi = ValueIteration()
     vi.solve(mdp)
     match = [ql.getAction(state) == action for state, action in vi.pi.items()]
-    ql_action = [ql.getAction(state) for state, action in vi.pi.items()]
-    # ql_action = [action for state, action in vi.pi.items()]
+    # ql_action = [ql.getAction(state) for state, action in vi.pi.items()]
+    # take_count = [action == 'Take' for state, action in vi.pi.items()]
+    # peek_count = [action == 'Peek' for state, action in vi.pi.items()]
+    # quit_count = [action == 'Quit' for state, action in vi.pi.items()]
+    # print('Take: {}'.format(sum(take_count) / len(take_count)))
+    # print('Peek: {}'.format(sum(peek_count) / len(take_count)))
+    # print('Quit: {}'.format(sum(quit_count) / len(take_count)))
     percentage_match = sum(match) / len(match)
-    print(ql_action)
+    # print(ql_action)
     # print(ql.weights)
     return percentage_match 
     # END_YOUR_CODE
