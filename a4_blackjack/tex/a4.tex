@@ -77,4 +77,15 @@ that all of this is my own work.
     \end{align*}
     Since we can initialize $V^{(0)}(s)$ and $V'^{(0)}(s)$ to be the same and the update rules in each iteration are the same, the convergence value of $V_\text{opt}(s)$ and $V'_\text{opt}(s)$ are also the same.
 \end{enumerate}
+
+\section*{Problem 4: Learning to Play Blackjack}
+\begin{enumerate}[label=(\alph*)]
+    \addtocounter{enumi}{1}
+    \item
+    Using identityFeatureExtractor() on smallMDP with 30000 trials yields 88.89\% of actions which match that of value iteration. On the other hand, using identityFeatureExtractor() on largeMDP with 30000 trials yields only 67.21\% of actions which match that of value iteration. I think the reason for this low performance is that using identityFeatureExptractor() requires learning separated value for each state/action pair which is quite large (over 8000 pairs) in the cases of largeMDP. Therefore 30000 trials might not be enough to learn accurately the q value.
+    \addtocounter{enumi}{1}
+    \item
+    The expected reward of value iteration trained on originalMDP performing on newThresholdMDP is 6.59. \\
+    The expected reward corresponding to Q-learning is 12, which is better because the Q-learning adapts its optimal Q-value during the simulation for the newThresholdMDP problem while value iteration just keeps its optimal actions on the original MDP problem.
+\end{enumerate}
 \end{document}
