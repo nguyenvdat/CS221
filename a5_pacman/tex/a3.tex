@@ -4,7 +4,7 @@
 \begin{document}
 
 \begin{center}
-{\Large CS221 Fall 2018 - 2019 Homework 3}
+{\Large CS221 Fall 2018 - 2019 Homework 5}
 
 \begin{tabular}{rl}     
 Name: & Dat Nguyen \\
@@ -17,6 +17,14 @@ that all of this is my own work.
 
 \section*{Problem 1: Minimax}
 \begin{enumerate}[label=(\alph*)]
-    \end
+	\item
+	$V_{\text{minmax}}(s, d)=
+	\begin{cases}
+	\text{Utility}(s) &\text{IsEnd}(s)\\
+	\text{Eval}(s) &d = \text{max depth}\\
+	\text{max}_{a \in \text{Actions}(s)} V_{\text{minmax}}(\text{Succ}(s, a), d ) & \text{Player}(s) = a_0\\
+	\text{min}_{a \in \text{Actions}(s)} V_{\text{minmax}}(\text{Succ}(s, a), d) & \text{Player}(s) = a_1, \dots, a_{n - 1} \\
+	\text{min}_{a \in \text{Actions}(s)} V_{\text{minmax}}(\text{Succ}(s, a), d + 1) & \text{Player}(s) = a_{n} \\
+	\end{cases}$
 \end{enumerate}
 \end{document}

@@ -264,11 +264,11 @@ class ClassicGameRules:
     if state.isLose(): self.lose(state, game)
 
   def win( self, state, game ):
-    if not self.quiet: print("Pacman emerges victorious! Score: %d" % state.data.score)
+    if not self.quiet: print "Pacman emerges victorious! Score: %d" % state.data.score
     game.gameOver = True
 
   def lose( self, state, game ):
-    if not self.quiet: print("Pacman died! Score: %d" % state.data.score)
+    if not self.quiet: print "Pacman died! Score: %d" % state.data.score
     game.gameOver = True
 
   def getProgress(self, game):
@@ -276,9 +276,9 @@ class ClassicGameRules:
 
   def agentCrash(self, game, agentIndex):
     if agentIndex == 0:
-      print("Pacman crashed")
+      print "Pacman crashed"
     else:
-      print("A ghost crashed")
+      print "A ghost crashed"
 
   def getMaxTotalTime(self, agentIndex):
     return self.timeout
@@ -551,10 +551,10 @@ def readCommand( argv ):
 
   # Special case: recorded games don't use the runGames method or args structure
   if options.gameToReplay != None:
-    print('Replaying recorded game %s.' % options.gameToReplay)
-    import pickle
+    print 'Replaying recorded game %s.' % options.gameToReplay
+    import cPickle
     f = open(options.gameToReplay)
-    try: recorded = pickle.load(f)
+    try: recorded = cPickle.load(f)
     finally: f.close()
     recorded['display'] = args['display']
     replayGame(**recorded)
@@ -626,21 +626,21 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
     if not beQuiet: games.append(game)
 
     if record:
-      import time, pickle
+      import time, cPickle
       fname = ('recorded-game-%d' % (i + 1)) +  '-'.join([str(t) for t in time.localtime()[1:6]])
       f = file(fname, 'w')
       components = {'layout': layout, 'actions': game.moveHistory}
-      pickle.dump(components, f)
+      cPickle.dump(components, f)
       f.close()
 
   if (numGames-numTraining) > 0:
     scores = [game.state.getScore() for game in games]
     wins = [game.state.isWin() for game in games]
     winRate = wins.count(True)/ float(len(wins))
-    print('Average Score:', sum(scores) / float(len(scores)))
-    print('Scores:       ', ', '.join([str(score) for score in scores]))
-    print('Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate))
-    print('Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins]))
+    print 'Average Score:', sum(scores) / float(len(scores))
+    print 'Scores:       ', ', '.join([str(score) for score in scores])
+    print 'Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate)
+    print 'Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins])
 
   return games
 

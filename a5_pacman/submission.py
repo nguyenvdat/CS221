@@ -163,7 +163,25 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_CODE (our solution is 26 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    def minimax(s, d, agent_index):
+      if s.isWin() or s.isLose() or d == self.depth + 1:
+        return self.evaluationFunction(s), None
+      actions = s.getLegalActions(agent_index)
+      next_agent_index = agent_index + 1 if agent_index < s.getNumAgents() - 1 else 0
+      next_d = d if agent_index < s.getNumAgents() - 1 else d + 1
+      values = [minimax(s.generateSuccessor(agent_index, action), next_d, next_agent_index)[0] for action in actions]
+      if agent_index == 0:
+        max_value = max(values) 
+        max_index = values.index(max_value)
+        return max_value, actions[max_index]
+      else:
+        min_value = min(values)
+        min_index = values.index(min_value)
+        return min_value, actions[min_index]
+
+    value, action = minimax(gameState, 1, 0)
+    print('Value: {}'.format(value))
+    return action
     # END_YOUR_CODE
 
 ######################################################################################
