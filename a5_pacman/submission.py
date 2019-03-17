@@ -180,7 +180,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         return min_value, actions[min_index]
 
     value, action = minimax(gameState, 1, 0)
-    print('Value: {}'.format(value))
     return action
     # END_YOUR_CODE
 
@@ -198,7 +197,37 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_CODE (our solution is 49 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+
+    def minimax_alpha_beta(s, d, agent_index, ancestor_min, ancestor_max):
+      if s.isWin() or s.isLose() or d == self.depth + 1:
+        return self.evaluationFunction(s), None
+      actions = s.getLegalActions(agent_index)
+      next_agent_index = agent_index + 1 if agent_index < s.getNumAgents() - 1 else 0
+      next_d = d if agent_index < s.getNumAgents() - 1 else d + 1
+      values = []
+      best_value = 1e9 if agent_index >= 1 else -1e9
+      best_action = None
+      for action in actions:
+        value, _ = minimax_alpha_beta(s.generateSuccessor(agent_index, action), next_d, next_agent_index, ancestor_min, ancestor_max)
+        if agent_index >= 1:
+          if value < best_value:
+            best_value = value
+            best_action = action
+          ancestor_min = min(ancestor_min, best_value)
+          if best_value <= ancestor_max:
+            return best_value, best_action
+        else:
+          if value > best_value:
+            best_value = value
+            best_action = action
+          ancestor_max = max(ancestor_max, best_value)
+          if value >= ancestor_min:
+            return best_value, best_action
+      return best_value, best_action
+
+    value, action = minimax_alpha_beta(gameState, 1, 0, 1e9, -1e9)
+    print(value)
+    return action
     # END_YOUR_CODE
 
 ######################################################################################
