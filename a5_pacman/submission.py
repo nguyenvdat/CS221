@@ -1,6 +1,7 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+import math
 
 from game import Agent
 
@@ -280,7 +281,25 @@ def betterEvaluationFunction(currentGameState):
   """
 
   # BEGIN_YOUR_CODE (our solution is 26 lines of code, but don't worry if you deviate from this)
-  raise Exception("Not implemented yet")
+  pacman_position = currentGameState.getPacmanPosition()
+  ghost_positions = currentGameState.getGhostPositions()
+  score = currentGameState.getScore()
+  distance_to_ghosts = [manhattanDistance(pacman_position, ghost_position) for ghost_position in ghost_positions]
+  min_ghost_distance = min(distance_to_ghosts)
+  avg_ghost_distance = sum(distance_to_ghosts) / len(distance_to_ghosts)
+  num_foods = currentGameState.getNumFood()
+  foods = currentGameState.getFood()
+  distance_to_foods = [manhattanDistance(pacman_position, (x, y)) for x in range(foods.width) for y in range(foods.height) if foods[x][y]]
+  avg_food_distance = sum(distance_to_foods) / len(distance_to_foods) if len(distance_to_foods) > 0 else -10
+  radius = 2
+  count_food_nearby = sum(foods[x][y] for x in range(max(pacman_position[0] - radius, 0), min(pacman_position[0] + radius, foods.width)) for y in range(max(pacman_position[1] - radius, 0), min(pacman_position[1] + radius, foods.height)))
+  # print("score: {}".format(score))
+  # print("min ghost distance: {}".format(min_ghost_distance))
+  # print("num foods: {}".format(num_foods))
+  # print("")
+  # return score + 10 * min_ghost_distance
+  return 5 * score + 8 * avg_ghost_distance - 10 * avg_food_distance + 5 * count_food_nearby
+  # return score
   # END_YOUR_CODE
 
 # Abbreviation
