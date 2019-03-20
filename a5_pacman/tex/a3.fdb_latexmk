@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1552464365 "a3.tex" "a3.pdf" "a3" 1552464365
+["pdflatex"] 1552983073 "a3.tex" "a3.pdf" "a3" 1552983073
   "/usr/local/texlive/2018basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2018basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1480098698 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2018basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1480098698 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -66,9 +66,9 @@
   "/usr/local/texlive/2018basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1523933242 79149 7f2f70f5e1a17ce0804b96e2d7b764ea ""
   "/usr/local/texlive/2018basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1548495955 2657848 6d9d391954e9e32322aa9c739fd659ea ""
   "/usr/local/texlive/2018basic/texmf.cnf" 1523933242 628 fc6344cfe40d0ae2a8eba43e51328a06 ""
-  "a3.aux" 1552464365 8 a94a2480d3289e625eea47cd1b285758 ""
-  "a3.tex" 1552464364 965 0009f6b1ab39e9b8f6610f6aeec4ee28 ""
+  "a3.aux" 1552983073 8 a94a2480d3289e625eea47cd1b285758 ""
+  "a3.tex" 1552983072 2197 377ec314a28c4f63e0be467f202d1160 ""
   (generated)
   "a3.pdf"
-  "a3.log"
   "a3.aux"
+  "a3.log"
