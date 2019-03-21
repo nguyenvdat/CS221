@@ -12,7 +12,10 @@ def create_chain_csp(n):
     csp = util.CSP()
     # Problem 0c
     # BEGIN_YOUR_CODE (our solution is 5 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    csp.add_variable(variables[0], [0, 1])
+    for i in range(0, n - 1):
+        csp.add_variable(variables[i + 1], [0, 1])
+        csp.add_binary_factor(variables[i], variables[i + 1], lambda x, y: x != y)
     # END_YOUR_CODE
     return csp
 
