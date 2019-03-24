@@ -36,7 +36,13 @@ def create_nqueens_csp(n = 8):
     csp = util.CSP()
     # Problem 1a
     # BEGIN_YOUR_CODE (our solution is 7 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    domain = [i for i in range(1, n + 1)]
+    variables = ['X%d'%i for i in range(1, n+1)]
+    for i in range(0, n):
+        csp.add_variable(variables[i], domain)
+    for i in range(0, n - 1):
+        for j in range(i + 1, n):
+            csp.add_binary_factor(variables[i], variables[j], lambda x, y: x != y and not(x + i == y + j) and not(x - i == y - j))
     # END_YOUR_CODE
     return csp
 
