@@ -279,7 +279,27 @@ class BacktrackingSearch():
 
 
         # BEGIN_YOUR_CODE (our solution is 20 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        remain_vars = [var]
+        while len(remain_vars) > 0:
+            var1 = remain_vars.pop(0)
+            for var2 in self.csp.get_neighbor_vars(var1):
+                delete_index = [True for i in range(len(self.domains[var2]))]
+                for i, val2 in enumerate(self.domains[var2]):
+                    for val1 in self.domains[var1]:
+                        if delete_index[i] == False:
+                            continue
+                        # check unary consistency
+                        if self.csp.unaryFactors[var2] and self.csp.unaryFactors[var2][val2] == 0:
+                            continue
+                        # check binary consistency
+                        if  self.csp.binaryFactors[var1] and self.csp.binaryFactors[var1][var2][val1][val2] == 0:
+                            continue
+                        delete_index[i] = False
+                for i in range(len(delete_index) - 1, -1, -1):
+                    if delete_index[i] == True:
+                        del self.domains[var2][i]
+                if any(delete_index):
+                    remain_vars.append(var2)
         # END_YOUR_CODE
 
 
