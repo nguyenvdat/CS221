@@ -1,5 +1,6 @@
 **.pyc
 **.DS_Store
 **.ipynb_checkpoints
-*.bak
-*.env
+**.bak
+**.env
+**.icloud

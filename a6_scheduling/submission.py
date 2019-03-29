@@ -515,7 +515,25 @@ class SchedulingCSPConstructor():
         #         be enforced by the constraints added by add_quarter_constraints
 
         # BEGIN_YOUR_CODE (our solution is 16 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        def factor(cid, unit): # each request can have only one course
+            if cid == course_id:
+                return unit > 0
+            else:
+                return unit == 0
+        for quarter in self.profile.quarters:
+            quarter_units = [] # keep track of max possible sum of units for this quarter
+            quarter_course_vars = [] # all (course_id, quarter) var for this quater
+            for request in self.profile.requests:
+                request_units = []
+                for course_id in request.cids:
+                    domain = [i for i in range(self.bulletin.courses[course_id].minUnits, self.bulletin.courses[course_id].maxUnits + 1)] + [0]
+                    csp.add_variable((course_id, quarter), domain)
+                    csp.add_binary_factor((request, quarter), (course_id, quarter), factor)
+                    quarter_course_vars.append((course_id, quarter))
+                    request_units.append(self.bulletin.courses[course_id].maxUnits)
+                quarter_units.append(max(request_units) if len(request_units) > 0 else 0)
+            quarter_unit_sum = get_sum_variable(csp, quarter, quarter_course_vars, sum(quarter_units))     
+            csp.add_unary_factor(quarter_unit_sum, lambda unit_sum: unit_sum >= self.profile.minUnits and unit_sum <= self.profile.maxUnits)
         # END_YOUR_CODE
 
     def add_all_additional_constraints(self, csp):
