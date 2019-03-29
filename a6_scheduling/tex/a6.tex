@@ -1,0 +1,95 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amssymb,graphicx, listings, array, bbm}
+
+\begin{document}
+
+\begin{center}
+{\Large CS221 Fall 2018 - 2019 Homework 6}
+
+\begin{tabular}{rl}     
+Name: & Dat Nguyen \\
+Date: & 3/20/2019
+\end{tabular}
+\end{center}
+ 
+ By turning in this assignment, I agree by the Stanford honor code and declare that all of this is my own work.
+
+\section*{Problem 0: Warmup}
+\begin{enumerate}[label=(\alph*)]
+	\item
+	We let the variable $X_1, X_2,\dots, X_m \in {0, 1}$ to be whether or not we press button j = 1,\dots,m \\
+	Let the constraint for bulb i = 1,\dots,n be
+	\begin{align*} 
+		f_i(T) = \mathbbm{1}[(-1)^{\sum_{j \in 1,\dots,m} X_j\mathbbm{1}[\text{bulb}_i \in T_j]} = 0] 
+	\end{align*}
+	Scope of each constrain is all variables $X_1, X_2,\dots, X_m$
+
+	\item
+	\begin{enumerate}[label=\roman*]
+	\item
+	There are 2 consistent assignments for this CSP, namely $X_1 = 1, X_2 = 0, X_3 = 1$ and $X_1 = 0, X_2 = 1, X_3 = 0$.
+	\item
+	Let D be the original domain, the call stack of backtrack() is as follow \\
+	backtrack($\emptyset$, 1, D) \\
+	backtrack($\{X_1 = 0\}$, 1, D) \\
+	backtrack($\{X_1 = 0, X_3 = 0\}$, 1, D) \\
+	backtrack($\{X_1 = 0, X_3 = 0, X_2 = 0\}$, 0, D) \\
+	backtrack($\{X_1 = 0, X_3 = 0, X_2 = 1\}$, 1, D)
+	\item
+	backtrack($\emptyset$, 1, D) \\
+	backtrack($\{X_1 = 0\}$, 1, $\text{Domain}_1 = \{1\}, \text{Domain}_2 = \{1\}, \text{Domain}_3 = \{0\}$) \\
+	backtrack($\{X_1 = 0, X_3 = 0\}$, 1, $\text{Domain}_1 = \{1\}, \text{Domain}_2 = \{1\}, \text{Domain}_3 = \emptyset$) \\
+	backtrack($\{X_1 = 0, X_3 = 1, X_2 = 0\}$, 1, $\text{Domain}_1 = \{1\}, \text{Domain}_2 = \emptyset, \text{Domain}_3 = \emptyset$) \\
+
+	\end{enumerate}
+\end{enumerate}
+
+\section*{Problem 2: Handling n-ary factors}
+\begin{enumerate}[label=(\alph*)]
+	\item 
+	For each variable $X_i$ we introduce an auxiliary variable $A_i$ which keeps track of the sum of all variables before $X_i$. The domain of $A_i$ is a tuple which first element is possible value of sum ($\{0, 1, 2, 3, 4, 5, 6\}$) and second element is possible value of $X_i$ ($\{0, 1, 2\}$) denoting the value to be included to the sum at this step. The constraint for $A_i$ and $X_i$ is that the second element of the tuple by $A_i$ must be consistent with value of $X_i$. In addition, for two consecutive steps we ensure that the sum of 2 elements in the tuple of $A_i$ to be equal to the first element of the tuple of the next step $A_{i+1}$. The final step we will have a variable 'result' which is consistent with the sum of all $X_i$ and we add one more constraint that its value is $\leq K$.
+\end{enumerate}
+
+\section*{Problem 3: Course Scheduling}
+\begin{enumerate}[label=(\alph*)]
+	\addtocounter{enumi}{2}
+	\item 
+	My profile
+	\begin{lstlisting}
+# Unit limit per quarter. You can ignore this for the first
+# few questions in problem 2.
+minUnits 3
+maxUnits 6
+
+# These are the quarters that I need to fill. It is assumed that
+# the quarters are sorted in chronological order.
+register Aut2019
+register Win2019
+
+# Courses I've already taken
+taken CS103
+taken CS106B
+taken CS107
+taken CS109
+taken CS140
+taken CS145
+taken CS161
+
+# Courses that I'm requesting
+request CS224N
+request CS221
+request CS228
+request CS229
+request CS246
+request CS223A
+	\end{lstlisting}
+	The best schedule the course scheduler found is
+	\begin{lstlisting}
+Quarter  Units  Course
+Aut2019  4      CS229
+Win2019  4      CS246	
+	\end{lstlisting}
+	I think this a a reasonable academic schedule ahead.
+	
+\end{enumerate}
+\end{document}
