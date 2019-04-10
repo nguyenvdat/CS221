@@ -75,9 +75,19 @@ class ExactInference(object):
     def elapseTime(self):
         if self.skipElapse: return ### ONLY FOR THE GRADER TO USE IN Problem 2
         # BEGIN_YOUR_CODE (our solution is 7 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
 
+        # END_YOUR_CODE
+        new_belief = [[0 for col in range(self.belief.getNumCols())] for row in range(self.belief.getNumRows())]
+        for new_row in range(self.belief.getNumRows()):
+            for new_col in range(self.belief.getNumCols()):
+                for old_row in range(self.belief.getNumRows()):
+                    for old_col in range(self.belief.getNumCols()):
+                        new_belief[new_row][new_col] += self.belief.getProb(old_row, old_col) * self.transProb.get(((old_row, old_col), (new_row, new_col)), 0)
+        for row in range(self.belief.getNumRows()):
+            for col in range(self.belief.getNumCols()):
+                self.belief.setProb(row, col, new_belief[row][col])
+        # print("sum: {}".format(self.belief.getSum()))
+        self.belief.normalize()
     # Function: Get Belief
     # ---------------------
     # Returns your belief of the probability that the car is in each tile. Your
