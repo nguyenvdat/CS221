@@ -86,7 +86,6 @@ class ExactInference(object):
         for row in range(self.belief.getNumRows()):
             for col in range(self.belief.getNumCols()):
                 self.belief.setProb(row, col, new_belief[row][col])
-        # print("sum: {}".format(self.belief.getSum()))
         self.belief.normalize()
     # Function: Get Belief
     # ---------------------
@@ -180,7 +179,15 @@ class ParticleFilter(object):
     ##################################################################################
     def observe(self, agentX, agentY, observedDist):
         # BEGIN_YOUR_CODE (our solution is 22 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        for tile in self.particles:
+            other_x, other_y = util.colToX(tile[1]), util.rowToY(tile[0])
+            true_distance = math.sqrt((agentX - other_x) ** 2 + (agentY - other_y) ** 2)
+            self.particles[tile] *= util.pdf(true_distance, Const.SONAR_STD, observedDist)
+        new_particles = collections.defaultdict(int)
+        for i in range(self.NUM_PARTICLES):
+            new_particle = util.weightedRandomChoice(self.particles)
+            new_particles[new_particle] += 1
+        self.particles = new_particles
         # END_YOUR_CODE
 
         self.updateBelief()
@@ -210,7 +217,12 @@ class ParticleFilter(object):
     ##################################################################################
     def elapseTime(self):
         # BEGIN_YOUR_CODE (our solution is 6 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        new_particles = collections.defaultdict(int)
+        for tile in self.particles:
+            for i in range(self.particles[tile]):
+                new_particle = util.weightedRandomChoice(self.transProbDict[tile])
+                new_particles[new_particle] += 1
+        self.particles = new_particles
         # END_YOUR_CODE
 
     # Function: Get Belief
