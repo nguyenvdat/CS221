@@ -46,7 +46,7 @@ def formula2a():
 
     # Note: You do NOT have to enforce that the mother is a "person"
     # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    return Forall('$x', Exists('$y', Implies(Person('$x'), Mother('$x', '$y'))))
     # END_YOUR_CODE
 
 # Sentence: "At least one person has no children."
@@ -57,7 +57,7 @@ def formula2b():
 
     # Note: You do NOT have to enforce that the child is a "person"
     # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    return Exists('$x', And(Person('$x'), Forall('$y', Not(Child('$x', '$y')))))
     # END_YOUR_CODE
 
 # Return a formula which defines Daughter in terms of Female and Child.
@@ -68,7 +68,7 @@ def formula2c():
     def Child(x, y): return Atom('Child', x, y)        # whether x has a child y
     def Daughter(x, y): return Atom('Daughter', x, y)  # whether x has a daughter y
     # BEGIN_YOUR_CODE (our solution is 4 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    return Forall('$x', Forall('$y', Equiv(And(Female('$x'), Child('$y', '$x')), Daughter('$y', '$x'))))
     # END_YOUR_CODE
 
 # Return a formula which defines Grandmother in terms of Female and Parent.
@@ -79,7 +79,7 @@ def formula2d():
     def Parent(x, y): return Atom('Parent', x, y)            # whether x has a parent y
     def Grandmother(x, y): return Atom('Grandmother', x, y)  # whether x has a grandmother y
     # BEGIN_YOUR_CODE (our solution is 5 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    return Forall('$x', Forall('$y', Equiv(And(Exists('$z', And(Parent('$z', '$x'), Parent('$y', '$z'))), Female('$x')), Grandmother('$y', '$x'))))
     # END_YOUR_CODE
 
 ############################################################
@@ -110,7 +110,6 @@ def liar():
     formulas.append(Equiv(TellTruth(john), Not(CrashedServer(john))))
     # You should add 5 formulas, one for each of facts 1-5.
     # BEGIN_YOUR_CODE (our solution is 11 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
     # END_YOUR_CODE
     query = CrashedServer('$x')
     return (formulas, query)
