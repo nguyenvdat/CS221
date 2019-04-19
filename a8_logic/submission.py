@@ -68,7 +68,9 @@ def formula2c():
     def Child(x, y): return Atom('Child', x, y)        # whether x has a child y
     def Daughter(x, y): return Atom('Daughter', x, y)  # whether x has a daughter y
     # BEGIN_YOUR_CODE (our solution is 4 lines of code, but don't worry if you deviate from this)
-    return Forall('$x', Forall('$y', Equiv(And(Female('$x'), Child('$y', '$x')), Daughter('$y', '$x'))))
+    return Forall('$x', Forall('$y', Equiv(
+        And(Female('$x'), Child('$y', '$x')), 
+        Daughter('$y', '$x'))))
     # END_YOUR_CODE
 
 # Return a formula which defines Grandmother in terms of Female and Parent.
@@ -79,7 +81,9 @@ def formula2d():
     def Parent(x, y): return Atom('Parent', x, y)            # whether x has a parent y
     def Grandmother(x, y): return Atom('Grandmother', x, y)  # whether x has a grandmother y
     # BEGIN_YOUR_CODE (our solution is 5 lines of code, but don't worry if you deviate from this)
-    return Forall('$x', Forall('$y', Equiv(And(Exists('$z', And(Parent('$z', '$x'), Parent('$y', '$z'))), Female('$x')), Grandmother('$y', '$x'))))
+    return Forall('$x', Forall('$y', Equiv(
+        And(Exists('$z', And(Parent('$z', '$x'), Parent('$y', '$z'))), Female('$x')), 
+        Grandmother('$y', '$x'))))
     # END_YOUR_CODE
 
 ############################################################
@@ -110,6 +114,27 @@ def liar():
     formulas.append(Equiv(TellTruth(john), Not(CrashedServer(john))))
     # You should add 5 formulas, one for each of facts 1-5.
     # BEGIN_YOUR_CODE (our solution is 11 lines of code, but don't worry if you deviate from this)
+    formulas.append(Equiv(TellTruth(susan), CrashedServer(nicole)))
+    formulas.append(Equiv(TellTruth(mark), CrashedServer(susan)))
+    formulas.append(Equiv(TellTruth(nicole), Not(TellTruth(susan))))
+
+    formulas.append(AndList([
+        OrList([TellTruth(john), TellTruth(susan), TellTruth(nicole), TellTruth(mark)]), 
+        Not(And(TellTruth(john), TellTruth(susan))), 
+        Not(And(TellTruth(john), TellTruth(nicole))), 
+        Not(And(TellTruth(john), TellTruth(mark))),
+        Not(And(TellTruth(susan), TellTruth(nicole))), 
+        Not(And(TellTruth(susan), TellTruth(mark))), 
+        Not(And(TellTruth(nicole), TellTruth(mark)))])) 
+
+    formulas.append(AndList([
+        OrList([CrashedServer(john), CrashedServer(susan), CrashedServer(nicole), CrashedServer(mark)]), 
+        Not(And(CrashedServer(john), CrashedServer(susan))), 
+        Not(And(CrashedServer(john), CrashedServer(nicole))), 
+        Not(And(CrashedServer(john), CrashedServer(mark))),
+        Not(And(CrashedServer(susan), CrashedServer(nicole))), 
+        Not(And(CrashedServer(susan), CrashedServer(mark))), 
+        Not(And(CrashedServer(nicole), CrashedServer(mark)))])) 
     # END_YOUR_CODE
     query = CrashedServer('$x')
     return (formulas, query)
