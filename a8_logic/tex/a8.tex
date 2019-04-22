@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amssymb,graphicx, listings, array, bbm,geometry}
+\geometry{right=2in}
+
+\begin{document}
+
+\begin{center}
+{\Large CS221 Fall 2018 - 2019 Homework 8}
+
+\begin{tabular}{rl}     
+Name: & Dat Nguyen \\
+Date: & 4/19/2019
+\end{tabular}
+\end{center}
+ 
+ By turning in this assignment, I agree by the Stanford honor code and declare that all of this is my own work.
+
+\section*{Problem 4: Logical Inference}
+\begin{enumerate}[label=(\alph*)]
+	\item
+	\begin{align*}
+		KB &=\{(A \lor B) \rightarrow C, A\} \\
+		&=\{\neg(A \lor B) \lor C, A\} \\
+		&=\{(\neg A \land \neg B \lor C, A \} \\
+		&=\{(\neg A \lor C) \land (\neg B \lor C), A\} \\
+		&=\{A \rightarrow C, B \rightarrow C, A\} \\
+		&=\{C, B \rightarrow C\}
+	\end{align*}
+
+	\item
+	\begin{align*}
+		KB &= \{A \lor B, B \rightarrow C, (A \lor C) \rightarrow D\} \\
+		&= \{A \lor B, \neg B \lor C, \neg(A \lor C) \lor D\} \\
+		&= \{A \lor B, \neg B \lor C, (\neg A \land \neg C) \lor D\} \\
+		&= \{A \lor B, \neg B \lor C, (\neg A \lor D) \land (\neg C \lor D)\} \\
+		&= \{B \lor D, \neg B \lor C, \neg C \lor D \} \\
+		&= \{D \lor C, D \lor \neg C\} \\
+		&= \{D\}
+	\end{align*}
+\end{enumerate}
+\end{document}
